@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BorrowingController;
+
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,4 +25,6 @@ Route::apiResource('cupboards', \App\Http\Controllers\CupboardController::class)
 Route::apiResource('places', \App\Http\Controllers\PlaceController::class);
 Route::apiResource('items', \App\Http\Controllers\ItemController::class);
 Route::post('/items/{item}/update-quantity', [\App\Http\Controllers\ItemController::class, 'updateQuantity']);
+Route::post('borrow', [BorrowingController::class, 'borrowItem']);
+Route::post('return/{id}', [BorrowingController::class, 'returnItem']);
 

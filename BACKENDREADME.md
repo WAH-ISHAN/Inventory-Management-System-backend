@@ -62,8 +62,17 @@ docker exec -it inventory-api php artisan make:controller ItemController --api
 
 docker exec -it inventory-api php artisan make:model Borrowing -m
 
+docker exec -it inventory-api php artisan make:controller BorrowingController
+
+docker exec -it inventory-api php artisan make:model AuditLog -m
+
 # Database Update
 docker exec -it inventory-api php artisan migrate
 
 # Storage Link
 docker exec -it inventory-api php artisan storage:link
+
+
+# router list check
+
+docker exec -it inventory-api php artisan route:list
