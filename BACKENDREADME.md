@@ -49,3 +49,9 @@ Password: admin123
 
 # Ubuntu Postman Open 
 /opt/Postman/Postman &
+
+
+# Models and  Migrations
+docker exec -it inventory-api php artisan make:model Cupboard -m
+
+docker exec -it inventory-api php artisan make:model Place -m
