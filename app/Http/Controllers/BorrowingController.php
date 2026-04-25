@@ -22,7 +22,7 @@ class BorrowingController extends Controller
         ]);
 
         return DB::transaction(function () use ($request) {
-            $item = Item::findOrFail($request->item_id);
+            $item = Item::lockForUpdate()->findOrFail($request->item_id);
             if ($item->quantity < $request->quantity_borrowed) {
                 return response()->json(['message' => 'Not enough stock!'], 400);
             }
@@ -45,12 +45,12 @@ class BorrowingController extends Controller
     public function returnItem(Request $request, $id)
     {
         return DB::transaction(function () use ($id) {
-            $borrowing = Borrowing::findOrFail($id);
+            $borrowing = Borrowing::lockForUpdate()->findOrFail($id);
 
             if ($borrowing->status === 'Returned') {
                 return response()->json(['message' => 'Already returned!'], 400);
             }
-            $item = $borrowing->item;
+            $item = Item::lockForUpdate()->findOrFail($borrowing->item_id);
             $item->increment('quantity', $borrowing->quantity_borrowed);
             $item->update(['status' => 'In-Store']);
 

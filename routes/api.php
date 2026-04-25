@@ -16,20 +16,24 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('cupboards', CupboardController::class);
-    Route::apiResource('places', PlaceController::class);
-    Route::apiResource('items', ItemController::class);
-    Route::post('/items/{item}/update-quantity', [ItemController::class, 'updateQuantity']);
+    Route::apiResource('cupboards', CupboardController::class)->only(['index', 'show']);
+    Route::apiResource('places', PlaceController::class)->only(['index', 'show']);
+    Route::apiResource('items', ItemController::class)->only(['index', 'show']);
     Route::post('borrow', [BorrowingController::class, 'borrowItem']);
     Route::post('return/{id}', [BorrowingController::class, 'returnItem']);
     Route::get('audit-logs', [AuditLogController::class, 'index']);
-    Route::post('items/{id}/quantity', [ItemController::class, 'updateQuantity']);
-    Route::post('items/{id}/status', [ItemController::class, 'updateStatus']);
 
     Route::middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
         // Admin-only routes
         Route::post('/users', [AuthController::class, 'createUser']);
-
+        
+        Route::apiResource('cupboards', CupboardController::class)->except(['index', 'show']);
+        Route::apiResource('places', PlaceController::class)->except(['index', 'show']);
+        Route::apiResource('items', ItemController::class)->except(['index', 'show']);
+        
+        Route::post('/items/{item}/update-quantity', [ItemController::class, 'updateQuantity']);
+        Route::post('items/{id}/quantity', [ItemController::class, 'updateQuantity']);
+        Route::post('items/{id}/status', [ItemController::class, 'updateStatus']);
     });
 });
 

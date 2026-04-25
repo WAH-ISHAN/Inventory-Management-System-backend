@@ -50,25 +50,27 @@ class ItemController extends Controller
      */
     public function updateQuantity(Request $request, $id)
     {
-        $item = Item::findOrFail($id);
-    {
         $request->validate([
             'action' => 'required|in:increment,decrement',
             'amount' => 'required|integer|min:1'
         ]);
 
-        if ($request->action === 'increment') {
-            $item->increment('quantity', $request->amount);
-        } else {
-            if ($item->quantity < $request->amount) {
-                return response()->json(['message' => 'Not enough stock!'], 400);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
+            $item = Item::lockForUpdate()->findOrFail($id);
+
+            if ($request->action === 'increment') {
+                $item->quantity += $request->amount;
+            } else {
+                if ($item->quantity < $request->amount) {
+                    return response()->json(['message' => 'Not enough stock!'], 400);
+                }
+                $item->quantity -= $request->amount;
             }
-            $item->decrement('quantity', $request->amount);
-        }
+            
+            $item->save();
 
-        return response()->json(['message' => 'Quantity updated', 'current_quantity' => $item->quantity]);
-
-    }
+            return response()->json(['message' => 'Quantity updated', 'current_quantity' => $item->quantity]);
+        });
     }
 
     /**

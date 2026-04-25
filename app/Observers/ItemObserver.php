@@ -12,7 +12,14 @@ class ItemObserver
      */
     public function created(Item $item): void
     {
-        //
+        \DB::table('audit_logs')->insert([
+            'user_id' => Auth::id() ?? 1,
+            'action' => 'Item Created',
+            'model' => 'Item',
+            'new_values' => json_encode($item->getAttributes()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
@@ -21,13 +28,15 @@ class ItemObserver
     public function updated(Item $item): void
     {
         if ($item->isDirty()) {
-        \App\Models\AuditLog::create([
-            'user_id' => Auth::id() ?? 1,
-            'action' => 'Item Updated',
-            'model' => 'Item',
-            'old_values' => $item->getOriginal(),
-            'new_values' => $item->getAttributes(),
-        ]);
+            \DB::table('audit_logs')->insert([
+                'user_id' => Auth::id() ?? 1,
+                'action' => 'Item Updated',
+                'model' => 'Item',
+                'old_values' => json_encode($item->getOriginal()),
+                'new_values' => json_encode($item->getAttributes()),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 
@@ -36,7 +45,14 @@ class ItemObserver
      */
     public function deleted(Item $item): void
     {
-        //
+        \DB::table('audit_logs')->insert([
+            'user_id' => Auth::id() ?? 1,
+            'action' => 'Item Deleted',
+            'model' => 'Item',
+            'old_values' => json_encode($item->getAttributes()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
