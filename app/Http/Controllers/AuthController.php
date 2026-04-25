@@ -61,6 +61,30 @@ class AuthController extends Controller{
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
 
+    public function index() {
+        return response()->json(User::orderBy('id', 'desc')->get());
+    }
+
+    public function updateUser(Request $request, $id) {
+        $user = User::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'role' => 'sometimes|in:admin,staff'
+        ]);
+
+        $user->update($request->only('name', 'role'));
+
+        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+    }
+
+    public function deleteUser($id) {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
+    }
+
 
     // logout
     public function logout(Request $request){

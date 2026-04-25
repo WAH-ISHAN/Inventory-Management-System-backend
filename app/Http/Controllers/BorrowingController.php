@@ -10,6 +10,18 @@ use Illuminate\Support\Facades\Auth;
 
 class BorrowingController extends Controller
 {
+    public function index()
+    {
+        $borrowings = Borrowing::orderBy('id', 'desc')->get()->map(function ($borrowing) {
+            $data = $borrowing->toArray();
+            $data['return_date'] = $borrowing->returned_date;
+            $data['condition'] = 'Good'; // Dummy since db doesn't have it
+            return $data;
+        });
+        return response()->json($borrowings);
+    }
+
+
    public function borrowItem(Request $request)
     {
         $request->validate([

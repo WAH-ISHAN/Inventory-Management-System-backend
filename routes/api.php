@@ -19,13 +19,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('cupboards', CupboardController::class)->only(['index', 'show']);
     Route::apiResource('places', PlaceController::class)->only(['index', 'show']);
     Route::apiResource('items', ItemController::class)->only(['index', 'show']);
-    Route::post('borrow', [BorrowingController::class, 'borrowItem']);
-    Route::post('return/{id}', [BorrowingController::class, 'returnItem']);
+    Route::get('borrowings', [BorrowingController::class, 'index']);
+    Route::post('borrowings', [BorrowingController::class, 'borrowItem']);
+    Route::post('borrowings/{id}/return', [BorrowingController::class, 'returnItem']);
     Route::get('audit-logs', [AuditLogController::class, 'index']);
 
     Route::middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
         // Admin-only routes
+        Route::get('/users', [AuthController::class, 'index']);
         Route::post('/users', [AuthController::class, 'createUser']);
+        Route::put('/users/{id}', [AuthController::class, 'updateUser']);
+        Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
         
         Route::apiResource('cupboards', CupboardController::class)->except(['index', 'show']);
         Route::apiResource('places', PlaceController::class)->except(['index', 'show']);
