@@ -1,1 +1,0 @@
-docker Run  with Ubuntu=   docker run -p 8000:8000 --name inventory-app inventory-backend

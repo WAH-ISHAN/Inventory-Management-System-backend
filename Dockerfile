@@ -1,8 +1,8 @@
+# ubuntu docker image with php 8.4 and composer installed, optimized for laravel applications
 FROM php:8.4-cli
 
 WORKDIR /var/www/html
 
-# libzip-dev එකතු කරලා තියෙන්නේ
 RUN apt-get update && apt-get install -y \
     curl \
     git \
