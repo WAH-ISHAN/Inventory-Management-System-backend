@@ -41,12 +41,12 @@ Route::get('/setup', function () {
         Artisan::call('migrate', ['--force' => true]);
 
 
-        if (!User::where('email', 'admin@inventory.com')->exists()) {
+      if (!User::where('email', 'admin@inventory.com')->exists()) {
             User::create([
                 'name' => 'System Admin',
                 'email' => 'admin@inventory.com',
                 'password' => Hash::make('admin123'),
-                'role' => 'Admin'
+                'role' => 'admin'
             ]);
         }
 
