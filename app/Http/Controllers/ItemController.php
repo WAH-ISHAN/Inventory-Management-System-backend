@@ -34,6 +34,16 @@ class ItemController extends Controller
             $data['image'] = $request->file('image')->store('items', 'public');
         }
         $item = Item::create($data);
+
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+            'action' => 'Item Created',
+            'model' => 'Item',
+            'new_values' => json_encode($item->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return response()->json($item, 201);
     }
 
@@ -69,6 +79,16 @@ class ItemController extends Controller
             
             $item->save();
 
+            \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+                'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+                'action' => 'Quantity Changed',
+                'model' => 'Item',
+                'old_values' => json_encode(['quantity' => $oldQuantity]),
+                'new_values' => json_encode(['quantity' => $item->quantity]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             return response()->json(['message' => 'Quantity updated', 'current_quantity' => $item->quantity]);
         });
     }
@@ -95,6 +115,16 @@ class ItemController extends Controller
 
         $item->update([
             'status' => $request->status
+        ]);
+
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+            'action' => 'Status Changed',
+            'model' => 'Item',
+            'old_values' => json_encode(['status' => $oldStatus]),
+            'new_values' => json_encode(['status' => $request->status]),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return response()->json([

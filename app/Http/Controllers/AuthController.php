@@ -67,6 +67,7 @@ class AuthController extends Controller{
 
     public function updateUser(Request $request, $id) {
         $user = User::findOrFail($id);
+        $oldValues = $user->toArray();
         
         $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -75,12 +76,33 @@ class AuthController extends Controller{
 
         $user->update($request->only('name', 'role'));
 
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+            'action' => 'User Updated',
+            'model' => 'User',
+            'old_values' => json_encode($oldValues),
+            'new_values' => json_encode($user->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return response()->json(['message' => 'User updated successfully', 'user' => $user]);
     }
 
     public function deleteUser($id) {
         $user = User::findOrFail($id);
+        $oldValues = $user->toArray();
         $user->delete();
+
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+            'action' => 'User Deleted',
+            'model' => 'User',
+            'old_values' => json_encode($oldValues),
+            'new_values' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return response()->json(['message' => 'User deleted successfully']);
     }

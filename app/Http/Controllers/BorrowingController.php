@@ -73,6 +73,16 @@ class BorrowingController extends Controller
                 'returned_date' => now()
             ]);
 
+            DB::table('audit_logs')->insert([
+                'user_id' => Auth::id() ?? 1,
+                'action' => 'Item Returned',
+                'model' => 'Borrowing',
+                'old_values' => json_encode(['status' => 'Borrowed']),
+                'new_values' => json_encode($borrowing->toArray()),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             return response()->json(['message' => 'Item returned successfully']);
         });
     }
