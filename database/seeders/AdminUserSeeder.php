@@ -13,10 +13,10 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::updateOrCreate(
-            ['email' => 'admin@inventory.com'], // මේ Email එක තමයි අපි Postman එකෙන් ගහන්නේ
+            ['email' => 'admin@inventory.com'],
             [
                 'name' => 'System Admin',
-                'password' => \Illuminate\Support\Facades\Hash::make('admin123'), // මේ Password එක
+                'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
                 'role' => 'admin'
             ]
         );
