@@ -66,6 +66,8 @@ docker exec -it inventory-api php artisan make:controller BorrowingController
 
 docker exec -it inventory-api php artisan make:model AuditLog -m
 
+docker exec -it inventory-api php artisan make:observer ItemObserver --model=Item
+
 # Database Update
 docker exec -it inventory-api php artisan migrate
 

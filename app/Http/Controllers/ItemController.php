@@ -80,4 +80,25 @@ class ItemController extends Controller
         $item->delete();
         return response()->json(['message' => 'Item deleted']);
     }
+
+
+    public function updateStatus(Request $request, $id)
+    {
+
+        $item = Item::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:In-Store,Borrowed,Damaged,Missing'
+        ]);
+
+        $item->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'message' => 'Status updated successfully',
+            'item_name' => $item->name,
+            'new_status' => $item->status
+        ]);
+    }
 }
