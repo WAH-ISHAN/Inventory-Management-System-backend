@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Borrowing;
 use App\Models\Item;
-use App\Models\AuditLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,11 +30,13 @@ class BorrowingController extends Controller
             $item->update(['status' => 'Borrowed']);
             $borrowing = Borrowing::create($request->all());
 
-            AuditLog::create([
+            DB::table('audit_logs')->insert([
                 'user_id' => Auth::id(),
                 'action' => 'Item Borrowed',
                 'model' => 'Borrowing',
-                'new_values' => $borrowing->toArray(),
+                'new_values' => json_encode($borrowing->toArray()),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             return response()->json(['message' => 'Item borrowed successfully', 'data' => $borrowing]);

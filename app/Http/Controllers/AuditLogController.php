@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class AuditLogController extends Controller
 {
@@ -11,7 +13,7 @@ class AuditLogController extends Controller
      */
     public function index()
     {
-        return response()->json(\App\Models\AuditLog::with('user')->latest()->get());
+        return response()->json(DB::table('audit_logs')->latest()->get());
     }
 
     /**
