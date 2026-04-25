@@ -49,6 +49,15 @@ class AuthController extends Controller{
             'role' => $request->role
         ]);
 
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => Auth::id() ?? $user->id,
+            'action' => 'User Created',
+            'model' => 'User',
+            'new_values' => json_encode($user->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
 

@@ -26,8 +26,9 @@ class BorrowingController extends Controller
             if ($item->quantity < $request->quantity_borrowed) {
                 return response()->json(['message' => 'Not enough stock!'], 400);
             }
-            $item->decrement('quantity', $request->quantity_borrowed);
-            $item->update(['status' => 'Borrowed']);
+            $item->quantity -= $request->quantity_borrowed;
+            $item->status = 'Borrowed';
+            $item->save();
             $borrowing = Borrowing::create($request->all());
 
             DB::table('audit_logs')->insert([
@@ -51,8 +52,9 @@ class BorrowingController extends Controller
                 return response()->json(['message' => 'Already returned!'], 400);
             }
             $item = Item::lockForUpdate()->findOrFail($borrowing->item_id);
-            $item->increment('quantity', $borrowing->quantity_borrowed);
-            $item->update(['status' => 'In-Store']);
+            $item->quantity += $borrowing->quantity_borrowed;
+            $item->status = 'In-Store';
+            $item->save();
 
             $borrowing->update([
                 'status' => 'Returned',
