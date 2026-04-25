@@ -7,6 +7,9 @@ use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\CupboardController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PlaceController;
+use Illuminate\Support\Facades\Artisan;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -31,4 +34,31 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+
+Route::get('/setup', function () {
+    try {
+
+        Artisan::call('migrate', ['--force' => true]);
+
+
+        if (!User::where('email', 'admin@inventory.com')->exists()) {
+            User::create([
+                'name' => 'System Admin',
+                'email' => 'admin@inventory.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'Admin'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database Migrated and Admin User Created Successfully!',
+            'admin_email' => 'admin@inventory.com',
+            'admin_password' => 'admin123'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+});
 
