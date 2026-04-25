@@ -21,4 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::apiResource('cupboards', \App\Http\Controllers\CupboardController::class);
 Route::apiResource('places', \App\Http\Controllers\PlaceController::class);
+Route::apiResource('items', \App\Http\Controllers\ItemController::class);
+Route::post('/items/{item}/update-quantity', [\App\Http\Controllers\ItemController::class, 'updateQuantity']);
 

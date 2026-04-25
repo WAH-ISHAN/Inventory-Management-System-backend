@@ -51,7 +51,19 @@ Password: admin123
 /opt/Postman/Postman &
 
 
-# Models and  Migrations
+# Models and  Migrations /CRUD/Controllers
 docker exec -it inventory-api php artisan make:model Cupboard -m
 
 docker exec -it inventory-api php artisan make:model Place -m
+
+docker exec -it inventory-api php artisan make:model Item -m
+
+docker exec -it inventory-api php artisan make:controller ItemController --api
+
+docker exec -it inventory-api php artisan make:model Borrowing -m
+
+# Database Update
+docker exec -it inventory-api php artisan migrate
+
+# Storage Link
+docker exec -it inventory-api php artisan storage:link
