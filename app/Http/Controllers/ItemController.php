@@ -58,6 +58,35 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    public function update(Request $request, string $id)
+    {
+        $item = Item::findOrFail($id);
+        $oldValues = $item->toArray();
+
+        $request->validate([
+            'name' => 'sometimes|required',
+            'code' => 'sometimes|required|unique:items,code,' . $id,
+            'quantity' => 'sometimes|required|integer',
+            'place_id' => 'sometimes|required|exists:places,id',
+            'status' => 'sometimes|required|in:In-Store,Borrowed,Damaged,Missing',
+            'description' => 'nullable|string'
+        ]);
+
+        $item->update($request->all());
+
+        \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+            'action' => 'Item Updated',
+            'model' => 'Item',
+            'old_values' => json_encode($oldValues),
+            'new_values' => json_encode($item->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json($item);
+    }
+
     public function updateQuantity(Request $request, $id)
     {
         $request->validate([
@@ -67,6 +96,7 @@ class ItemController extends Controller
 
         return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
             $item = Item::lockForUpdate()->findOrFail($id);
+            $oldQuantity = $item->quantity;
 
             if ($request->action === 'increment') {
                 $item->quantity += $request->amount;
@@ -76,7 +106,7 @@ class ItemController extends Controller
                 }
                 $item->quantity -= $request->amount;
             }
-            
+
             $item->save();
 
             \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
@@ -108,6 +138,7 @@ class ItemController extends Controller
     {
 
         $item = Item::findOrFail($id);
+        $oldStatus = $item->status;
 
         $request->validate([
             'status' => 'required|in:In-Store,Borrowed,Damaged,Missing'

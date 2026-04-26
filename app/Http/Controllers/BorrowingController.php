@@ -12,12 +12,7 @@ class BorrowingController extends Controller
 {
     public function index()
     {
-        $borrowings = Borrowing::orderBy('id', 'desc')->get()->map(function ($borrowing) {
-            $data = $borrowing->toArray();
-            $data['return_date'] = $borrowing->returned_date;
-            $data['condition'] = 'Good'; // Dummy since db doesn't have it
-            return $data;
-        });
+        $borrowings = Borrowing::orderBy('id', 'desc')->get();
         return response()->json($borrowings);
     }
 
@@ -57,7 +52,13 @@ class BorrowingController extends Controller
     }
     public function returnItem(Request $request, $id)
     {
-        return DB::transaction(function () use ($id) {
+        $request->validate([
+            'return_date' => 'required|date',
+            'condition' => 'required|in:Good,Damaged,Lost',
+            'notes' => 'nullable|string'
+        ]);
+
+        return DB::transaction(function () use ($request, $id) {
             $borrowing = Borrowing::lockForUpdate()->findOrFail($id);
 
             if ($borrowing->status === 'Returned') {
@@ -70,7 +71,9 @@ class BorrowingController extends Controller
 
             $borrowing->update([
                 'status' => 'Returned',
-                'returned_date' => now()
+                'returned_date' => $request->return_date,
+                'condition' => $request->condition,
+                'notes' => $request->notes
             ]);
 
             DB::table('audit_logs')->insert([

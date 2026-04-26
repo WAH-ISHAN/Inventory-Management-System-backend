@@ -8,7 +8,8 @@ class Borrowing extends Model
 {
     protected $fillable = [
     'item_id', 'borrower_name', 'contact_details', 'borrow_date',
-    'expected_return_date', 'quantity_borrowed', 'returned_date', 'status'
+    'expected_return_date', 'quantity_borrowed', 'returned_date', 'status',
+    'condition', 'notes'
 ];
 
 public function item() {
