@@ -6,17 +6,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:3000',
-        'https://inventory-management-system-fronten-gilt.vercel.app',
-        'https://inventory-management-system-frontend-4y8mmbzm8.vercel.app',
-        'https://inventory-management-system-frontend-pgp167eb1.vercel.app',
-        env('FRONTEND_URL', 'http://localhost:3000')
-    ],
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => [
-        '^https:\/\/inventory-management-system-frontend-[a-z0-9-]+\.vercel\.app$',
-    ],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
@@ -24,6 +16,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];
