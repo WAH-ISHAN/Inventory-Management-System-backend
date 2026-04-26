@@ -7,8 +7,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:3000', 
+        'http://localhost:3000',
         'https://inventory-management-system-fronten-gilt.vercel.app',
+        'https://inventory-management-system-frontend-4y8mmbzm8.vercel.app',
         env('FRONTEND_URL', 'http://localhost:3000')
     ],
 
