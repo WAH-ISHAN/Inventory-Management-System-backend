@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 
 class AuditLogController extends Controller
@@ -13,7 +13,37 @@ class AuditLogController extends Controller
      */
     public function index()
     {
-        return response()->json(DB::table('audit_logs')->latest()->get());
+        $logs = AuditLog::with('user:id,email')
+            ->latest()
+            ->get()
+            ->map(function (AuditLog $log) {
+                $newValues = is_array($log->new_values) ? $log->new_values : [];
+                $oldValues = is_array($log->old_values) ? $log->old_values : [];
+
+                $entityName = $newValues['name']
+                    ?? $newValues['email']
+                    ?? $oldValues['name']
+                    ?? $oldValues['email']
+                    ?? null;
+
+                return [
+                    'id' => $log->id,
+                    'user_id' => $log->user_id,
+                    'user_email' => $log->user?->email,
+                    'action' => $log->action,
+                    'model' => $log->model,
+                    'description' => $entityName
+                        ? sprintf('%s (%s: %s)', $log->action, $log->model, $entityName)
+                        : sprintf('%s (%s)', $log->action, $log->model),
+                    'old_values' => $log->old_values,
+                    'new_values' => $log->new_values,
+                    'created_at' => $log->created_at,
+                    'updated_at' => $log->updated_at,
+                ];
+            })
+            ->values();
+
+        return response()->json($logs);
     }
 
     /**
