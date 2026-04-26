@@ -11,7 +11,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(\App\Models\Place::with('cupboard')->get());
     }
 
     /**
